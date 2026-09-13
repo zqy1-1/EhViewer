@@ -70,6 +70,7 @@ import com.hippo.ehviewer.client.EhEngine
 import com.hippo.ehviewer.client.EhUrl
 import com.hippo.ehviewer.client.EhUtils
 import com.hippo.ehviewer.ui.Screen
+import com.hippo.ehviewer.ui.destinations.CookieSignInScreenDestination
 import com.hippo.ehviewer.ui.destinations.WebViewSignInScreenDestination
 import com.hippo.ehviewer.ui.openBrowser
 import com.hippo.ehviewer.ui.tools.awaitConfirmationOrCancel
@@ -233,6 +234,21 @@ fun AnimatedVisibilityScope.SignInScreen(navigator: DestinationsNavigator) = Scr
                             )
                         }
                         TextButton(
+                            onClick = { navigate(CookieSignInScreenDestination) },
+                            shapes = ButtonDefaults.shapes(),
+                            modifier = Modifier.weight(1f),
+                        ) {
+                            Text(
+                                text = buildAnnotatedString {
+                                    withStyle(
+                                        style = SpanStyle(textDecoration = TextDecoration.Underline),
+                                    ) {
+                                        append(stringResource(id = R.string.cookie_sign_in))
+                                    }
+                                },
+                            )
+                        }
+                        TextButton(
                             onClick = {
                                 Settings.gallerySite.value = EhUrl.SITE_E
                                 Settings.needSignIn.value = false
@@ -314,6 +330,21 @@ fun AnimatedVisibilityScope.SignInScreen(navigator: DestinationsNavigator) = Scr
                                             style = SpanStyle(textDecoration = TextDecoration.Underline),
                                         ) {
                                             append(stringResource(id = R.string.sign_in_via_webview))
+                                        }
+                                    },
+                                )
+                            }
+                            TextButton(
+                                onClick = { navigate(CookieSignInScreenDestination) },
+                                shapes = ButtonDefaults.shapes(),
+                                modifier = Modifier.padding(horizontal = 4.dp).width(128.dp),
+                            ) {
+                                Text(
+                                    text = buildAnnotatedString {
+                                        withStyle(
+                                            style = SpanStyle(textDecoration = TextDecoration.Underline),
+                                        ) {
+                                            append(stringResource(id = R.string.cookie_sign_in))
                                         }
                                     },
                                 )

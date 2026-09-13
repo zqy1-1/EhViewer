@@ -55,7 +55,12 @@ android {
     val snapshot = !hasProperty("release")
 
     defaultConfig {
-        applicationId = "moe.tarsin.ehviewer"
+        // Changed from "moe.tarsin.ehviewer" so this fork can be installed
+        // side by side with the original EhViewer (package name must be
+        // unique). FileProvider authority and BuildConfig.APPLICATION_ID follow
+        // ${applicationId} automatically; shortcuts.xml carries a static copy
+        // that is updated to match.
+        applicationId = "moe.tarsin.ehviewer.zqy"
         versionCode = 180063
         versionName = if (snapshot) {
             "1.15.0-SNAPSHOT"

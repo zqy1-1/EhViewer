@@ -53,6 +53,9 @@ jobs:
 
   default:
     runs-on: ubuntu-latest
+    # Required so the "Publish APK to release" step can create/update the release.
+    permissions:
+      contents: write
     steps:
       - name: Checkout
         uses: actions/checkout@v6
@@ -88,23 +91,20 @@ jobs:
       - name: Build
         run: ./gradlew assembleDefaultRelease
 
+      # Replaced the three per-ABI uploads with a single arm64-v8a artifact:
+      # that is the only ABI needed for a personal side-by-side build, and the
+      # universal APK is large enough to be slow to build and download.
       - name: Upload ARM64
         uses: actions/upload-artifact@v7
         with:
           name: default-arm64-v8a-${{ github.sha }}
           path: app/build/outputs/apk/default/release/app-default-arm64-v8a-release.apk
 
-      - name: Upload x86_64
+      - name: Upload universal APK
         uses: actions/upload-artifact@v7
         with:
-          name: default-x86_64-${{ github.sha }}
-          path: app/build/outputs/apk/default/release/app-default-x86_64-release.apk
-
-      - name: Upload ARM32
-        uses: actions/upload-artifact@v7
-        with:
-          name: default-armeabi-v7a-${{ github.sha }}
-          path: app/build/outputs/apk/default/release/app-default-armeabi-v7a-release.apk
+          name: default-universal-${{ github.sha }}
+          path: app/build/outputs/apk/default/release/app-default-universal-release.apk
 
       - name: Upload mapping
         if: always()
@@ -118,6 +118,23 @@ jobs:
         with:
           name: default-native-debug-symbols-${{ github.sha }}
           path: app/build/outputs/native-debug-symbols/defaultRelease/native-debug-symbols.zip
+
+      # Publish the arm64 APK as a release asset as well. Actions artifacts
+      # cannot be fetched through mirrors (they 302 to
+      # pipelines.actions.githubusercontent.com with auth), while release assets
+      # can. The tag is fixed so each push refreshes the same release.
+      - name: Publish APK to release
+        uses: softprops/action-gh-release@v3
+        with:
+          tag_name: zqy-cookie-login
+          name: "EhViewer-zqy (cookie login, arm64-v8a)"
+          body: |
+            Side-by-side build of the EhViewer fork with cookie sign-in mode.
+            Package name: moe.tarsin.ehviewer.zqy (installs alongside the original EhViewer).
+            Built from commit ${{ github.sha }}.
+          files: |
+            app/build/outputs/apk/default/release/app-default-arm64-v8a-release.apk
+          fail_on_unmatched_files: true
 
   marshmallow:
     runs-on: ubuntu-latest
