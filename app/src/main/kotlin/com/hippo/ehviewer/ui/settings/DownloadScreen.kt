@@ -281,8 +281,18 @@ fun AnimatedVisibilityScope.DownloadScreen(navigator: DestinationsNavigator) = S
                     }.getOrNull()
                 }
                 runSuspendCatching {
-                    val result = downloadLocation.list().parMapNotNull { getRestoreItem(it) }.also {
-                        fillGalleryListByApi(it, EhUrl.referer)
+                    val result = downloadLocation.list().parMapNotNull { getRestoreItem(it) }
+                    // The metadata lookup only fills in titles and thumbnails.
+                    // A network failure here must not abort restoring local
+                    // downloads, otherwise an offline or censored connection
+                    // makes already-downloaded galleries impossible to get
+                    // back. The entries are restored either way.
+                    if (result.isNotEmpty()) {
+                        runSuspendCatching {
+                            fillGalleryListByApi(result, EhUrl.referer)
+                        }.onFailure {
+                            logcat(it)
+                        }
                     }
                     if (result.isEmpty()) {
                         launchSnackbar(RESTORE_COUNT_MSG(restoreDirCount))

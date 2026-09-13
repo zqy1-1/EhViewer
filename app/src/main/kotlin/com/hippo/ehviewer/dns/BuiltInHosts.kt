@@ -14,9 +14,11 @@ import java.net.InetAddress
  */
 object BuiltInHosts {
     private val table: Map<String, List<String>> = mapOf(
+        // Cloudflare-fronted web hosts.
         "e-hentai.org" to listOf(
             "172.66.140.62",
             "172.66.132.196",
+            "172.67.2.238",
         ),
         "repo.e-hentai.org" to listOf(
             "172.66.140.62",
@@ -30,17 +32,28 @@ object BuiltInHosts {
             "172.67.187.219",
             "104.21.56.202",
         ),
+        // Origin servers. api. is required for the gallery metadata lookup
+        // (fillGalleryListByApi) used by favorites and by restoring local
+        // downloads, so leaving it out breaks those features.
+        "api.e-hentai.org" to listOf(
+            "95.211.79.44",
+            "212.7.200.104",
+            "37.48.81.204",
+            "5.79.104.110",
+        ),
         "ehgt.org" to listOf(
-            "109.236.85.28",
             "89.39.106.43",
+            "109.236.85.28",
             "62.112.8.21",
         ),
         "s.exhentai.org" to listOf(
-            "199.59.148.97",
+            "178.175.132.22",
+            "178.175.129.254",
+            "178.175.128.254",
         ),
         "upld.e-hentai.org" to listOf(
-            "95.211.208.236",
             "89.149.221.236",
+            "95.211.208.236",
         ),
         "upld.exhentai.org" to listOf(
             "178.175.132.22",
