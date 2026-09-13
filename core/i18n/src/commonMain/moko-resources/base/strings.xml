@@ -79,6 +79,12 @@
     <string name="cookie_sign_in_import">Import from clipboard</string>
     <string name="cookie_sign_in_no_data">No valid cookie data in clipboard</string>
     <string name="cookie_sign_in_failed">Invalid cookie format</string>
+    <string name="settings_advanced_domain_fronting">E-Hentai direct connection</string>
+    <string name="settings_advanced_domain_fronting_summary">Connect to the E-Hentai servers by address without sending the server name, so a reset of the TLS handshake does not block access. Turn off if the sites are reachable without it.</string>
+    <string name="settings_advanced_doh">DNS over HTTPS</string>
+    <string name="settings_advanced_doh_summary">Resolve E-Hentai host names through an encrypted DNS service to avoid poisoned answers.</string>
+    <string name="settings_advanced_built_in_hosts">Built-in server addresses</string>
+    <string name="settings_advanced_built_in_hosts_summary">Use a bundled table of server addresses as a fallback when DNS cannot be trusted. The addresses may become outdated.</string>
     <!-- Gallery List -->
     <string name="gallery_list_search_bar_hint_exhentai">Search ExHentai</string>
     <string name="gallery_list_search_bar_hint_e_hentai">Search E-Hentai</string>

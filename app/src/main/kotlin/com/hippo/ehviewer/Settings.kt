@@ -113,6 +113,14 @@ object Settings : DataStorePreferences(null) {
     val readCacheSize = intPref("read_cache_size_2", 640)
     val enableCronet = boolPref("enable_cronet", true)
     val enableQuic = boolPref("enable_quic", true)
+
+    // Network workarounds for censored networks. All default to on because
+    // without them the E-Hentai domains are unreachable (poisoned DNS, SNI
+    // reset), and the settings UI lets the user turn them off if needed.
+    val builtInHosts = boolPref("built_in_hosts", true)
+    val doh = boolPref("dns_over_https", true)
+    val dohEndpoint = stringPref("doh_endpoint", "https://1.12.12.12/dns-query")
+    val domainFronting = boolPref("domain_fronting", true)
     val hardwareBitmapThreshold = intPref("hardware_bitmap_threshold", 16384)
     val preloadThumbAggressively = boolPref("preload_thumb_aggressively", false)
     val animateItems = boolPref("animate_items", true)

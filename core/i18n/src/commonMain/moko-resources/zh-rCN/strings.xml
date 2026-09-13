@@ -65,6 +65,12 @@
     <string name="cookie_sign_in_import">从剪贴板导入</string>
     <string name="cookie_sign_in_no_data">剪贴板中没有有效的 Cookie 数据</string>
     <string name="cookie_sign_in_failed">Cookie 格式无效</string>
+    <string name="settings_advanced_domain_fronting">E-Hentai 直连</string>
+    <string name="settings_advanced_domain_fronting_summary">按 IP 连接 E-Hentai 服务器且不发送服务器名称，避免 TLS 握手被重置导致无法访问。若网络本身可直连，可关闭。</string>
+    <string name="settings_advanced_doh">DNS over HTTPS</string>
+    <string name="settings_advanced_doh_summary">通过加密 DNS 解析 E-Hentai 域名，避免 DNS 污染得到错误 IP。</string>
+    <string name="settings_advanced_built_in_hosts">内置服务器地址</string>
+    <string name="settings_advanced_built_in_hosts_summary">DNS 不可信时使用内置的服务器地址表作为兜底。地址可能过期。</string>
     <!-- Gallery List -->
     <string name="gallery_list_search_bar_hint_exhentai">搜索 ExHentai</string>
     <string name="gallery_list_search_bar_hint_e_hentai">搜索 E-Hentai</string>

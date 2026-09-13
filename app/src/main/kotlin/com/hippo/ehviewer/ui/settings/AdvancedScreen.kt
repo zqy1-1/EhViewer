@@ -208,6 +208,22 @@ fun AnimatedVisibilityScope.AdvancedScreen(navigator: DestinationsNavigator) = S
                     }
                 }
             }
+            // Workarounds for censored networks (poisoned DNS, SNI reset).
+            SwitchPreference(
+                title = stringResource(id = R.string.settings_advanced_domain_fronting),
+                summary = stringResource(id = R.string.settings_advanced_domain_fronting_summary),
+                state = Settings.domainFronting.asMutableState(),
+            )
+            SwitchPreference(
+                title = stringResource(id = R.string.settings_advanced_doh),
+                summary = stringResource(id = R.string.settings_advanced_doh_summary),
+                state = Settings.doh.asMutableState(),
+            )
+            SwitchPreference(
+                title = stringResource(id = R.string.settings_advanced_built_in_hosts),
+                summary = stringResource(id = R.string.settings_advanced_built_in_hosts_summary),
+                state = Settings.builtInHosts.asMutableState(),
+            )
             if (isAtLeastO) {
                 IntSliderPreference(
                     maxValue = 16384,

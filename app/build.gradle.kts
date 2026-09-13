@@ -209,6 +209,9 @@ dependencies {
 
     // https://square.github.io/okhttp/changelogs/changelog/
     implementation(platform(libs.okhttp.bom))
+    // DNS-over-HTTPS resolver, used to defeat DNS poisoning of the E-Hentai
+    // domains. Version comes from the okhttp BOM above.
+    implementation(libs.okhttp.dnsoverhttps)
 
     implementation(libs.logcat)
 
