@@ -50,23 +50,25 @@ object BuiltInHosts {
     )
 
     private val cache = HashMap<String, List<InetAddress>>()
+    private val misses = HashSet<String>()
 
     /**
      * Returns the pinned addresses for [hostname], or null when the host is
-     * not covered by the table. Results are memoised, including hosts that are
-     * deliberately absent, so a miss costs one map lookup.
+     * not covered by the table or none of its entries parse. Results are
+     * memoised, including misses, so a miss costs one set lookup.
      */
     fun lookup(hostname: String): List<InetAddress>? = synchronized(cache) {
-        if (cache.containsKey(hostname)) {
-            return cache[hostname]
-        }
-        val resolved = table[hostname]?.mapNotNull { literal ->
+        if (misses.contains(hostname)) return null
+        cache[hostname]?.let { return it }
+
+        val resolved = table[hostname].orEmpty().mapNotNull { literal ->
             runCatching { InetAddress.getByName(literal) }.getOrNull()
-        }.orEmpty().takeIf { it.isNotEmpty() }
+        }
+        if (resolved.isEmpty()) {
+            misses.add(hostname)
+            return null
+        }
         cache[hostname] = resolved
         return resolved
     }
-
-    /** True when the table has an entry for [hostname]. */
-    fun covers(hostname: String): Boolean = table.containsKey(hostname)
 }

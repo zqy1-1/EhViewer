@@ -7,6 +7,9 @@ import com.hippo.ehviewer.dns.PoisonProofDns
 import io.ktor.client.engine.okhttp.OkHttpConfig
 import okhttp3.AsyncDns
 import okhttp3.android.AndroidAsyncDns
+import java.security.KeyStore
+import javax.net.ssl.TrustManagerFactory
+import javax.net.ssl.X509TrustManager
 
 fun OkHttpConfig.configureClient() {
     config {
@@ -21,10 +24,20 @@ fun OkHttpConfig.configureClient() {
         }
 
         // Domain fronting: connect by address so the ClientHello carries no SNI
-        // for the E-Hentai domains. Its alternatives (direct IP + SNI omitted)
-        // are in the class doc.
+        // for the E-Hentai domains, which is what the interceptor resets.
         if (Settings.domainFronting.value) {
-            sslSocketFactory(DomainFrontingSslSocketFactory())
+            val trustManager = platformTrustManager()
+            sslSocketFactory(DomainFrontingSslSocketFactory(trustManager), trustManager)
         }
     }
+}
+
+/**
+ * The platform default X509TrustManager, required by the non-deprecated
+ * OkHttp sslSocketFactory overload. Certificate validation is unchanged.
+ */
+private fun platformTrustManager(): X509TrustManager {
+    val factory = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm())
+    factory.init(null as KeyStore?)
+    return factory.trustManagers.filterIsInstance<X509TrustManager>().first()
 }
