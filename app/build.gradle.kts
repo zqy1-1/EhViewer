@@ -53,7 +53,7 @@ android {
         .removeSuffix(".git")
 
     defaultConfig {
-        applicationId = "moe.tarsin.ehviewer"
+        applicationId = "moe.tarsin.ehviewer.pure1146"
         versionCode = 180063
         versionName = "1.14.6"
         // versionNameSuffix = "-SNAPSHOT"

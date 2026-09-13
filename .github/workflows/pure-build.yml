@@ -1,0 +1,69 @@
+name: Pure build
+
+# Minimal build for the side-by-side "EhViewer + cookie sign-in" APK based on
+# 1.14.6. Kept separate from ci.yml so the upstream checks (spotless, lint,
+# rust clippy, marshmallow) do not gate the artifact we actually install.
+on:
+  push:
+    branches:
+      - '**'
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Setup Java
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: 21
+
+      - name: Install Rust Toolchain
+        run: rustup target add armv7-linux-androideabi
+
+      - name: Rust Cache
+        uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: "./app/src/main/rust"
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v6
+
+      - name: CMake Cache
+        uses: actions/cache@v5
+        with:
+          path: app/.cxx
+          key: cmake-cookie-${{ hashFiles('rust-toolchain.toml', 'settings.gradle.kts', 'app/src/main/cpp/CMakeLists.txt', 'app/src/main/rust/Cargo.lock') }}
+          restore-keys: cmake-cookie-
+
+      - name: Build
+        run: ./gradlew assembleDefaultRelease
+
+      - name: Upload ARM64
+        uses: actions/upload-artifact@v7
+        with:
+          name: pure-arm64-v8a-${{ github.sha }}
+          path: app/build/outputs/apk/default/release/app-default-arm64-v8a-release.apk
+
+      # Publish to a fixed release so the APK can be fetched through a mirror
+      # (Actions artifacts cannot).
+      - name: Publish APK to release
+        uses: softprops/action-gh-release@v3
+        with:
+          tag_name: zqy-pure-1146
+          name: "EhViewer 1.14.6 PURE (control build) (arm64-v8a)"
+          body: |
+            Control build: the unmodified 1.14.6 release, with only the
+            package name changed. Used to tell a code problem apart from a
+            build-environment problem.
+            Package name: moe.tarsin.ehviewer.pure1146
+            Built from commit ${{ github.sha }}.
+          files: |
+            app/build/outputs/apk/default/release/app-default-arm64-v8a-release.apk
+          fail_on_unmatched_files: true
