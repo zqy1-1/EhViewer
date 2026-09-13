@@ -1,5 +1,6 @@
 package com.hippo.ehviewer.ui.login
 
+import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -10,8 +11,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
 import androidx.compose.foundation.text.input.rememberTextFieldState
+import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
@@ -50,7 +51,7 @@ import splitties.systemservices.clipboardManager
  */
 @Destination<RootGraph>
 @Composable
-fun CookieSignInScreen(navigator: DestinationsNavigator) = Screen(navigator) {
+fun AnimatedVisibilityScope.CookieSignInScreen(navigator: DestinationsNavigator) = Screen(navigator) {
     val context = LocalContext.current
     val cookieInput = rememberTextFieldState()
     var cookieError by mutableStateOf<String?>(null)
