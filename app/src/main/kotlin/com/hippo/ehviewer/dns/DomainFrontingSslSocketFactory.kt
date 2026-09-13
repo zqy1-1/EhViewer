@@ -8,17 +8,20 @@ import javax.net.ssl.SSLSocketFactory
 import javax.net.ssl.X509TrustManager
 
 /**
- * Domain fronting: connect by IP and skip sending SNI.
+ * Domain fronting: connect by IP and skip sending SNI, but only for the hosts
+ * that need it.
  *
- * A TLS ClientHello that carries an E-Hentai host name in its SNI extension is
+ * A TLS ClientHello carrying an E-Hentai host name in its SNI extension is
  * reset by the interceptor before the handshake completes, which surfaces as
- * "SSL handshake aborted: Connection reset by peer". Handing the factory an
- * [InetAddress] instead of the host name makes the platform omit SNI, while the
- * certificate is still validated by [trustManager] and the Host header still
- * tells the server which site is wanted.
+ * "SSL handshake aborted: Connection reset by peer". Passing an [InetAddress]
+ * instead of the host name makes the platform omit SNI while the certificate
+ * is still validated through [trustManager].
  *
- * Only used when [com.hippo.ehviewer.Settings.domainFronting] is on; otherwise
- * every call delegates to the platform factory unchanged.
+ * This applies only to the Cloudflare-fronted hosts in [FRONTABLE_HOSTS].
+ * Omitting SNI against an origin server (api., upld., s.) breaks it the other
+ * way round: those hosts have no other way to learn which site is wanted, so
+ * the request hangs until it times out. Everything else is delegated to the
+ * platform factory unchanged.
  */
 class DomainFrontingSslSocketFactory(
     private val trustManager: X509TrustManager,
@@ -37,7 +40,7 @@ class DomainFrontingSslSocketFactory(
         port: Int,
         autoClose: Boolean,
     ): Socket {
-        if (!com.hippo.ehviewer.Settings.domainFronting.value) {
+        if (!com.hippo.ehviewer.Settings.domainFronting.value || !isFrontable(host)) {
             return delegate.createSocket(s, host, port, autoClose)
         }
         val address: InetAddress? = s.inetAddress
@@ -47,7 +50,6 @@ class DomainFrontingSslSocketFactory(
         if (autoClose) {
             runCatching { s.close() }
         }
-        // Passing an InetAddress makes the platform connect without SNI.
         return delegate.createSocket(address, port)
     }
 
@@ -73,4 +75,19 @@ class DomainFrontingSslSocketFactory(
     @Throws(IOException::class)
     fun createSocket(host: String, port: Int, autoClose: Boolean): Socket =
         delegate.createSocket(host, port)
+
+    private fun isFrontable(host: String): Boolean =
+        FRONTABLE_HOSTS.any { host == it || host.endsWith(".$it") }
+
+    companion object {
+        /**
+         * Hosts behind Cloudflare, which is where the SNI reset happens and
+         * where omitting SNI still works (the Host header routes the request).
+         * Origin servers are deliberately absent.
+         */
+        private val FRONTABLE_HOSTS = listOf(
+            "e-hentai.org",
+            "exhentai.org",
+        )
+    }
 }
