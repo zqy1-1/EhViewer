@@ -73,6 +73,12 @@
     <string name="sign_in_failed_tip">If this issue continues, try \"%s\".</string>
     <string name="get_it">Got it</string>
     <string name="cloudflare_bypass_failed">Failed to bypass Cloudflare challenge</string>
+    <string name="cookie_sign_in">Sign in via Cookie</string>
+    <string name="cookie_sign_in_title">Cookie Sign In</string>
+    <string name="cookie_sign_in_tip">Paste your e-hentai/exhentai login cookies from a browser (ipb_member_id, ipb_pass_hash, optionally igneous). One per line, format: name: value</string>
+    <string name="cookie_sign_in_import">Import from clipboard</string>
+    <string name="cookie_sign_in_no_data">No valid cookie data in clipboard</string>
+    <string name="cookie_sign_in_failed">Invalid cookie format</string>
     <!-- Gallery List -->
     <string name="gallery_list_search_bar_hint_exhentai">Search ExHentai</string>
     <string name="gallery_list_search_bar_hint_e_hentai">Search E-Hentai</string>

@@ -10,6 +10,7 @@ object EhCookieStore : CookiesStorage {
     private val manager = getCookieManager()
     private val urlE = URLBuilder(URLProtocol.HTTPS, "e-hentai.org").build()
     private val urlEx = URLBuilder(URLProtocol.HTTPS, "exhentai.org").build()
+    private val urlForums = URLBuilder(URLProtocol.HTTPS, "forums.e-hentai.org").build()
 
     fun removeAllCookies() = manager.removeAllCookies()
 
@@ -56,6 +57,59 @@ object EhCookieStore : CookiesStorage {
     fun isCloudflareBypassed() = manager.getCookies(urlE)?.containsKey("cf_clearance") == true
 
     fun flush() = manager.flush()
+
+    /**
+     * 10 years in seconds, used as the maxAge for imported identity cookies.
+     *
+     * A concrete value is required: a cookie with neither maxAge nor expires is
+     * a session cookie, and android.webkit.CookieManager.flush() only persists
+     * cookies that carry Max-Age/Expires. ktor renders any non-null maxAge as
+     * "Max-Age=<value>", so a moderate 10-year value is used instead of
+     * Int.MAX_VALUE to stay clear of any range clamping on the WebView side.
+     */
+    private const val COOKIE_MAX_AGE = 315_360_000 // 10 years
+
+    /**
+     * Import identity cookies (ipb_member_id + ipb_pass_hash, optional igneous) for
+     * cookie-based sign-in that bypasses Cloudflare. Mirrors the EhViewer_CN_SXJ
+     * CookieSignInScene storeCookie() behaviour: writes to the e-hentai,
+     * exhentai and forums hosts (SXJ parity) so every request in the app
+     * carries the credentials. Uses COOKIE_MAX_AGE rather than a session
+     * cookie so CookieManager.flush() persists the login across restarts.
+     */
+    fun importIdentityCookies(memberId: String, passHash: String, igneous: String = "") {
+        clearAllIdentityCookies(clearIgneous = igneous.isNotEmpty())
+        val domains = listOf(urlE, urlEx, urlForums)
+        domains.forEach { url ->
+            val domain = url.host
+            manager.setCookie(url, Cookie(KEY_IPB_MEMBER_ID, memberId, maxAge = COOKIE_MAX_AGE, domain = domain, path = "/"))
+            manager.setCookie(url, Cookie(KEY_IPB_PASS_HASH, passHash, maxAge = COOKIE_MAX_AGE, domain = domain, path = "/"))
+            if (igneous.isNotEmpty()) {
+                manager.setCookie(url, Cookie(KEY_IGNEOUS, igneous, maxAge = COOKIE_MAX_AGE, domain = domain, path = "/"))
+            }
+        }
+        flush()
+    }
+
+    /**
+     * Clear the stored identity cookies before an import.
+     *
+     * [clearIgneous] is false when the user imports without an igneous value:
+     * an existing igneous (obtained via the WebView flow) stays valid, and
+     * wiping it would only resurrect the exhentai sad-panda page. member_id and
+     * pass_hash are always cleared so a stale identity cannot win over the new
+     * one being written.
+     */
+    private fun clearAllIdentityCookies(clearIgneous: Boolean) {
+        listOf(urlE, urlEx, urlForums).forEach { url ->
+            manager.setCookie(url, Cookie(KEY_IPB_MEMBER_ID, "", maxAge = 0, domain = url.host, path = "/"))
+            manager.setCookie(url, Cookie(KEY_IPB_PASS_HASH, "", maxAge = 0, domain = url.host, path = "/"))
+            if (clearIgneous) {
+                manager.setCookie(url, Cookie(KEY_IGNEOUS, "", maxAge = 0, domain = url.host, path = "/"))
+            }
+        }
+        flush()
+    }
 
     // See https://github.com/Ehviewer-Overhauled/Ehviewer/issues/873
     override suspend fun addCookie(requestUrl: Url, cookie: Cookie) {

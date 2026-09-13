@@ -59,6 +59,12 @@
     <string name="sign_in_failed_tip">若持续出错，请尝试“%s”。</string>
     <string name="get_it">知道了</string>
     <string name="cloudflare_bypass_failed">未能绕过 Cloudflare 验证</string>
+    <string name="cookie_sign_in">通过 Cookie 登录</string>
+    <string name="cookie_sign_in_title">Cookie 登录</string>
+    <string name="cookie_sign_in_tip">从浏览器复制你的 e-hentai/exhentai 登录 Cookie（ipb_member_id、ipb_pass_hash，可选 igneous），粘贴到下方框中。每行格式：名称: 值</string>
+    <string name="cookie_sign_in_import">从剪贴板导入</string>
+    <string name="cookie_sign_in_no_data">剪贴板中没有有效的 Cookie 数据</string>
+    <string name="cookie_sign_in_failed">Cookie 格式无效</string>
     <!-- Gallery List -->
     <string name="gallery_list_search_bar_hint_exhentai">搜索 ExHentai</string>
     <string name="gallery_list_search_bar_hint_e_hentai">搜索 E-Hentai</string>
