@@ -32,6 +32,8 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import com.ehviewer.core.i18n.R
 import com.ehviewer.core.network.EhCookieStore
+import com.hippo.ehviewer.Settings
+import com.hippo.ehviewer.client.EhUrl
 import com.hippo.ehviewer.ui.Screen
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootGraph
@@ -155,10 +157,14 @@ fun AnimatedVisibilityScope.CookieSignInScreen(navigator: DestinationsNavigator)
                         return@TextButton
                     }
                     val (memberId, passHash, igneous) = parsed
-                    // Do NOT call EhUtils.signOut() here: it sets needSignIn=true
-                    // which yanks the user back to the password screen mid-login,
-                    // and it would wipe cf_clearance. importIdentityCookies()
-                    // already clears the old identity cookies itself.
+                    // Reset the gallery site to e-hentai before logging in, the
+                    // way EhUtils.signOut() does in the WebView flow. Without
+                    // this the saved value can be left on exhentai and a
+                    // direct (non-VPN) connection then fails to load images.
+                    // signOut() itself is not used because it also sets
+                    // needSignIn=true, which would bounce the user back to the
+                    // password screen mid-login, and it wipes cf_clearance.
+                    Settings.gallerySite.value = EhUrl.SITE_E
                     EhCookieStore.importIdentityCookies(memberId, passHash, igneous)
                     postLogin()
                 },
