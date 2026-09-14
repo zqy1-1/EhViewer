@@ -62,6 +62,13 @@
 </div>
 
 # Description
+fork自FooIbar/EhViewer的1.14.6版本，然后在此基础上把cookie登录加上了，然后加了绿E的网络方案，cookie登录可以绕开cloudflare验证了，不过还是需要开vpn登录，看漫画可以直连。安装不会覆盖原有的彩E，可以共存。做的糙了点,主要还是自用，把cookie粘贴进去就行了。
+cookie的大体格式就是：
+ipb_member_id:123456
+ipb_pass_hash:asdsasdadasdasdasd
+igneous:null
+
+弄的时候踩了不少坑，FooIbar/EhViewer的最新的源码把直连e站的代码部分给删了，弄得一开始我明明加好了cookie登录，却没法直连。
 
 A modern EhViewer fork dedicated to high-performance
 
