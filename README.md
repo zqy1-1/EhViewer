@@ -74,7 +74,7 @@ igneous:null
 
 弄的时候踩了不少坑，FooIbar/EhViewer的最新的源码把直连e站的代码部分给删了，弄得一开始我明明加好了cookie登录，却没法直连。
 
-——————————————————————————————————————————————————————————————
+—————————————————————————————————————————————————
 
 A modern EhViewer fork dedicated to high-performance
 
